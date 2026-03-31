@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Sync Log Tree View -->
+    <record id="view_sync_log_tree" model="ir.ui.view">
+        <field name="name">sync.log.tree</field>
+        <field name="model">sync.log</field>
+        <field name="arch" type="xml">
+            <list string="Sync Logs" default_order="timestamp desc" decoration-danger="state == 'failed'" decoration-success="state == 'success'">
+                <field name="timestamp"/>
+                <field name="name"/>
+                <field name="model"/>
+                <field name="direction"/>
+                <field name="external_id"/>
+                <field name="state" widget="badge" decoration-success="state == 'success'" decoration-danger="state == 'failed'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Sync Log Form View -->
+    <record id="view_sync_log_form" model="ir.ui.view">
+        <field name="name">sync.log.form</field>
+        <field name="model">sync.log</field>
+        <field name="arch" type="xml">
+            <form string="Sync Log">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="model"/>
+                            <field name="external_id"/>
+                        </group>
+                        <group>
+                            <field name="direction"/>
+                            <field name="state" widget="badge"/>
+                            <field name="timestamp"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="error_details" string="Error Details" invisible="state != 'failed'">
+                            <field name="error_message"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Sync Config Form View -->
+    <record id="view_sync_config_form" model="ir.ui.view">
+        <field name="name">sync.config.form</field>
+        <field name="model">sync.config</field>
+        <field name="arch" type="xml">
+            <form string="API Sync Configuration">
+                <header>
+                    <button name="action_sync_customers" string="Sync Customers (API → Odoo)" type="object" class="oe_highlight"/>
+                    <button name="action_sync_products" string="Sync Products (API → Odoo)" type="object" class="oe_highlight"/>
+                    <button name="action_sync_orders" string="Sync Orders (API → Odoo)" type="object" class="oe_highlight"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Connection Details">
+                            <field name="api_base_url"/>
+                            <field name="api_token" password="True"/>
+                        </group>
+                        <group string="Enabled Features">
+                            <field name="sync_customers"/>
+                            <field name="sync_products"/>
+                            <field name="sync_orders"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Actions -->
+    <record id="action_sync_config" model="ir.actions.act_window">
+        <field name="name">API Config</field>
+        <field name="res_model">sync.config</field>
+        <field name="view_mode">form</field>
+        <field name="res_id" eval="1"/>
+    </record>
+
+    <record id="action_sync_logs" model="ir.actions.act_window">
+        <field name="name">Sync Logs</field>
+        <field name="res_model">sync.log</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Menus -->
+    <menuitem id="menu_webapp_sync_root" name="WebApp Sync" sequence="100" web_icon="webapp_odoo_sync,static/description/icon.png"/>
+    <menuitem id="menu_webapp_sync_config" name="Settings" parent="menu_webapp_sync_root" action="action_sync_config" sequence="10"/>
+    <menuitem id="menu_webapp_sync_logs" name="Sync Logs" parent="menu_webapp_sync_root" action="action_sync_logs" sequence="20"/>
+
+</odoo>
